@@ -40,16 +40,35 @@ git checkout -b <type>/<short-topic> upstream/master
 
 ## Fork-first collaboration
 
-Work happens in the contributor fork by default:
+Work happens in the contributor fork by default, on a single long-lived `dev`
+branch:
 
-- develop, test and document on fork branches; push them to the fork;
+- `master` mirrors `upstream/master` and serves only as the PR baseline and
+  read-only reference;
+- `dev` is the single personal branch (fork + local). It carries the
+  fork-only todo/handoff document, in-progress features and notes; push it to
+  the fork for backup;
 - **do not open upstream pull requests proactively.** Open one only when the
-  user explicitly asks; until then keep everything in the fork;
+  user explicitly asks; until then keep everything in `dev`;
+- when a PR is requested: branch from `upstream/master` (**not** from `dev`),
+  cherry-pick the feature commits from `dev` excluding the fork-only document
+  commits, push, and wait for the checks; delete the temporary branch after
+  merge;
 - rationale: every push to a PR branch triggers workflows in the base
-  repository (noise and review churn), a half-finished PR is hard to reshape,
-  and fork branches rebase freely;
-- when a PR is requested: prepare it from a clean fork branch, push, wait for
-  the checks; keep further iteration in the fork first.
+  repository (noise and review churn); a half-finished PR is hard to reshape;
+  a single dev branch rebases freely.
+
+Keep the fork-only document updates as standalone commits so that
+`git cherry-pick` can exclude them precisely when preparing a PR.
+
+## Local toolchains
+
+Before downloading a toolchain tarball, check whether the workstation already
+provides a user-level Environment Modules tree: look for a `module-init.sh`
+next to the project or in the user's workspace, `source` it, then run
+`module avail`. Prefer those modules so local versions stay consistent with
+the cluster. Do not leave durable tools in `/tmp`; it is often tmpfs and gets
+cleared between sessions.
 
 ## Fork-only documents
 
