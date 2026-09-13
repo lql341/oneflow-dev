@@ -38,6 +38,32 @@ git checkout -b <type>/<short-topic> upstream/master
    capabilities that were not measured on a target compute node.
 5. Rebase on `upstream/master` before asking for review when the base moved.
 
+## Fork-only documents
+
+Some repositories keep a development todo/handoff document that must stay in
+the contributor fork and never appear in an upstream pull request.
+
+Maintain it on a dedicated fork branch (for this project:
+`docs/development-todo` in the contributor fork):
+
+- update it at the end of every work session: state snapshot, backlog
+  checkboxes, completed log;
+- never add it to a branch that will be proposed upstream, and never include
+  it in an upstream PR;
+- do not carry merged history in that branch: after upstream moves (for
+  example a PR merge), rebase the fork-only branch onto the new
+  `upstream/master` so it only contains the document changes.
+
+Update flow:
+
+```bash
+git checkout docs/development-todo
+# edit the document
+git commit -am "Update development todo: <summary>"
+git push origin docs/development-todo
+git checkout <working branch>
+```
+
 ## Common failure modes to avoid
 
 - Reporting success from a local run while CI is red.
