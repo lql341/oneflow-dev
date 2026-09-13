@@ -38,6 +38,19 @@ git checkout -b <type>/<short-topic> upstream/master
    capabilities that were not measured on a target compute node.
 5. Rebase on `upstream/master` before asking for review when the base moved.
 
+## Fork-first collaboration
+
+Work happens in the contributor fork by default:
+
+- develop, test and document on fork branches; push them to the fork;
+- **do not open upstream pull requests proactively.** Open one only when the
+  user explicitly asks; until then keep everything in the fork;
+- rationale: every push to a PR branch triggers workflows in the base
+  repository (noise and review churn), a half-finished PR is hard to reshape,
+  and fork branches rebase freely;
+- when a PR is requested: prepare it from a clean fork branch, push, wait for
+  the checks; keep further iteration in the fork first.
+
 ## Fork-only documents
 
 Some repositories keep a development todo/handoff document that must stay in
