@@ -23,6 +23,29 @@ Cluster connection details (hosts, ports, SSH setup, profiles) are out of scope
 here — use the `scnet-hpc` skill for that and keep this repository free of
 credentials and personal paths.
 
+## Resuming work (start of every session)
+
+Personal, non-upstream work lives on the fork's `dev` branch. Begin a session
+with:
+
+```bash
+git fetch origin
+git checkout dev && git pull --ff-only
+cat doc/reports/architecture/oneflow-development-todo.md
+```
+
+If the working tree must stay on another branch, read the todo without
+switching:
+
+```bash
+git show dev:doc/reports/architecture/oneflow-development-todo.md
+```
+
+The todo document is the session entry point: current state snapshot,
+prioritized backlog, cold-start context and the definition of done. Update it
+before ending the session, and keep its updates as standalone commits so PR
+branches can exclude them.
+
 ## Non-negotiable rules
 
 1. **Regression before pull request.** Numerical-kernel or backend changes
