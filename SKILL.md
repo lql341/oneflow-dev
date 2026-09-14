@@ -31,14 +31,14 @@ with:
 ```bash
 git fetch origin
 git checkout dev && git pull --ff-only
-cat doc/reports/architecture/oneflow-development-todo.md
+cat doc/plans/oneflow-development-todo.md
 ```
 
 If the working tree must stay on another branch, read the todo without
 switching:
 
 ```bash
-git show dev:doc/reports/architecture/oneflow-development-todo.md
+git show dev:doc/plans/oneflow-development-todo.md
 ```
 
 The todo document is the session entry point: current state snapshot,

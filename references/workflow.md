@@ -75,24 +75,22 @@ cleared between sessions.
 Some repositories keep a development todo/handoff document that must stay in
 the contributor fork and never appear in an upstream pull request.
 
-Maintain it on a dedicated fork branch (for this project:
-`docs/development-todo` in the contributor fork):
+Maintain it on the fork's long-lived `dev` branch:
 
 - update it at the end of every work session: state snapshot, backlog
   checkboxes, completed log;
 - never add it to a branch that will be proposed upstream, and never include
   it in an upstream PR;
-- do not carry merged history in that branch: after upstream moves (for
-  example a PR merge), rebase the fork-only branch onto the new
-  `upstream/master` so it only contains the document changes.
+- after upstream moves, rebase or otherwise synchronize `dev` deliberately;
+  do not mix the fork-only todo with an upstream feature branch.
 
 Update flow:
 
 ```bash
-git checkout docs/development-todo
-# edit the document
+git checkout dev
+# edit doc/plans/oneflow-development-todo.md
 git commit -am "Update development todo: <summary>"
-git push origin docs/development-todo
+# push origin/dev only when explicitly authorized
 git checkout <working branch>
 ```
 
