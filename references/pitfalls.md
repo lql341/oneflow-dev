@@ -34,6 +34,11 @@ These were each paid for once; do not rediscover them.
 - **Output files need numerical comparison, not byte comparison.** Flux ordering and reductions can create tiny last-bit differences. For the 3D CPU oracle, compare the same output files with explicit absolute and relative limits, and record the observed maxima. Keep the legacy path as the reference.
 - **`sbatch --test-only` is not completion evidence.** Confirm the real job in `squeue`, then use `sacct` for `COMPLETED` and `0:0`, and inspect the stage logs and machine-readable result file. Scheduler submission output alone is insufficient.
 
+## Lifecycle integration
+
+- **A lifecycle contract is not a production hook.** A standalone `EulerDomainStateLifecycle` test can prove invalidate → create → upload → registry ordering, but E4 is not complete until the production `INIT_FLOWFIELD`/`READ_RESTART` chain passes a real `MRField` view through a context-owned backend. Do not mark the phase complete from contract tests alone.
+- **The legacy task chain has no implicit context.** `CmxTask`/`MultiSolverMultiGridTask` currently iterate solver/grid through global state; production integration must add an explicit context-aware seam and preserve the solver/zone/grid key, rather than introducing a hidden global registry pointer.
+
 ## Test harness
 
 - `ctest` can exit 0 while discovering zero tests. Require the expected test
@@ -43,6 +48,8 @@ These were each paid for once; do not rediscover them.
   refreshed after CMake metadata changes.
 - A benchmark binary can pass while the device is absent if the failing path
   returns early; check the device count assertion first.
+
+- **CTest filters gtest discovery names, not executable names.** After `gtest_discover_tests`, `ctest -R oneflow_...` may select zero tests; inspect `ctest -N` and filter on the discovered `Suite.Case` names, then require a non-empty expected count.
 
 ## Hardware and scheduler
 
