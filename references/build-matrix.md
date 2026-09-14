@@ -17,6 +17,23 @@ Requirements: GCC 9.3.0 or newer (GCC 7 cannot build the tree), an MPI with
 development files, METIS, CGNS. Dependency locations are passed through the
 `*_HOME_INC` / `*_HOME_LIB` environment variables read by the top-level CMake.
 
+For a cluster build, load the site-provided compiler, MPI, CMake and Python modules first, then export the dependency variables before the first configure. Use a fresh build directory when any dependency path changes. A minimal preflight is:
+
+```bash
+module list
+which gcc && gcc --version
+which mpirun && mpirun --version
+test -f "$MPI_HOME_INC/mpi.h"
+test -f "$METIS_HOME_INC/metis.h"
+test -f "$CGNS_HOME_INC/cgnslib.h"
+test -f "$METIS_HOME_LIB"
+test -f "$CGNS_HOME_LIB"
+```
+
+The repository's Kunshan layout places the self-built METIS installation below `deps/metis-install`; the exact workspace root and cluster paths belong in private cluster configuration. Do not copy absolute paths into source, reports or this skill.
+
+For the production 3D CPU batch seam, the runtime gate is deliberately narrow: `ONEFLOW_ENABLE_UNS_CPU_BATCH=1` is effective only on CPU, five equations and the Lax-Friedrichs scheme. The normal Roe/SLAU2 suite remains an important fallback regression, but a separate Lax legacy/batch oracle is required to prove that the new path executes and matches the old path.
+
 ## 2. 1D Euler port — CPU contract test
 
 ```bash

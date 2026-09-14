@@ -18,6 +18,22 @@ These were each paid for once; do not rediscover them.
 - **METIS is often not installed cluster-wide.** Build it from source with the
   same compiler as the solver.
 
+## OneFLOW main-solver build
+
+- **The root solver and the 1D Euler port are separate CMake projects.** A successful port build or port contract test does not compile or validate the `codes/uns` main solver. Keep `builds/solver-cpu` and `builds/port-*` separate and report them separately.
+- **The root CMake reads dependency locations from environment variables.** Before configuring, verify `MPI_HOME_INC`, `MPI_HOME_LIB`, `METIS_HOME_INC`, `METIS_HOME_LIB`, `CGNS_HOME_INC`, and `CGNS_HOME_LIB`; a stale path can surface later as `metis.h` or `HXCgns.h` missing, which is an environment or cache problem rather than a source failure.
+- **Do not reuse a contaminated root build directory.** CMake caches include and library paths. If the dependency layout changes, inspect `CMakeCache.txt` or configure a fresh build directory; changing shell variables alone does not reliably replace cached paths.
+- **The standard cluster workspace uses a dependency subdirectory.** Treat `deps/metis-install` as a layout convention and avoid scripts that assume a sibling `metis-install` directory. Keep absolute cluster roots in private configuration, not in this skill.
+- **Verify the loaded toolchain inside the job.** Record `module list`, `which gcc`, `gcc --version`, `which mpirun`, and `mpirun --version` after module setup. Login-node defaults and batch-node modules can differ.
+
+## OneFLOW runtime and oracle traps
+
+- **Full-solver project arguments are relative to the current case root.** The existing Python harness changes into a suite work directory and invokes the executable with a relative case name. Passing an absolute case path can make OneFLOW concatenate the current directory twice and fail while opening a script file. Reuse the harness convention for ad-hoc cases.
+- **The standard five-case CPU suite does not prove the 3D batch seam ran.** Its current cases use Roe or SLAU2; the guarded main-solver seam is enabled only for CPU + five equations + Lax-Friedrichs. Add a dedicated Lax case or an explicit legacy-versus-batch oracle before claiming runtime coverage.
+- **Match the legacy Lax-Friedrichs formula, not a generic Rusanov formula.** The legacy path uses Roe-averaged velocity/pressure for the maximum eigenvalue. A generic endpoint-max Rusanov implementation can compile and look plausible while failing an integrated oracle.
+- **Output files need numerical comparison, not byte comparison.** Flux ordering and reductions can create tiny last-bit differences. For the 3D CPU oracle, compare the same output files with explicit absolute and relative limits, and record the observed maxima. Keep the legacy path as the reference.
+- **`sbatch --test-only` is not completion evidence.** Confirm the real job in `squeue`, then use `sacct` for `COMPLETED` and `0:0`, and inspect the stage logs and machine-readable result file. Scheduler submission output alone is insufficient.
+
 ## Test harness
 
 - `ctest` can exit 0 while discovering zero tests. Require the expected test
